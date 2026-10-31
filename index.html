@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Truck GO – مسار الشاحنات في الجزائر</title>
+<meta name="theme-color" content="#0a0f1a"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -116,6 +117,7 @@ ol#steps li::before{content:counter(s);display:inline-grid;place-items:center;wi
 .mi{border-radius:16px}
 #clear-route{border-radius:999px;top:calc(env(safe-area-inset-top,0px) + 126px)}
 .route-line{filter:drop-shadow(0 0 3px rgba(0,0,0,.5))}
+@media (max-width:759px){.leaflet-bottom{bottom:var(--sh,0px)}}
 /* tracking */
 #fab-track{position:absolute;top:calc(env(safe-area-inset-top,0px) + 68px);inset-inline-start:12px;z-index:900;width:50px;height:50px;border-radius:50%;border:2px solid var(--line);background:var(--panel);color:var(--text);font-size:23px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 #fab-track.on{background:var(--ok);border-color:#fff;color:#03271c}
@@ -135,6 +137,35 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
 .me i{position:absolute;inset:0;border-radius:50%;background:#2f80ff;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.45);transform:rotate(var(--r,0deg))}
 .me i::after{content:"";position:absolute;left:50%;top:-13px;margin-left:-6px;border:6px solid transparent;border-top:0;border-bottom:10px solid #2f80ff}
 @keyframes pl{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+
+/* ===== v11 ===== */
+:root{--asphalt:#0a0f1a;--panel:#111a2b;--line:#1f2d47;--amber:#ffb81c;--ok:#22d3a0;--text:#f2f6fc;--mut:#94a5bf}
+body.light{--asphalt:#edf1f7;--panel:#fff;--line:#d9e1ee;--text:#101c2e;--mut:#56677f;--amber:#f59e0b}
+.logo{background:linear-gradient(135deg,#0d1424,#1b2a47);color:#fff;border:0;border-radius:16px;padding:7px 16px;box-shadow:inset 0 -3px 0 var(--amber),0 8px 22px rgba(0,0,0,.3)}
+.logo b{color:var(--amber)}
+.icon-btn{width:46px;height:46px;border-radius:50%;background:color-mix(in srgb,var(--panel) 88%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:20px}
+#sheet{border-top:0;border-radius:28px 28px 0 0;box-shadow:0 -12px 44px rgba(0,0,0,.4)}
+#sheet::before{content:"";position:absolute;top:0;inset-inline:26px;height:5px;border-radius:0 0 5px 5px;background:repeating-linear-gradient(135deg,var(--amber) 0 12px,transparent 12px 24px)}
+#grab{font-size:15.5px;color:var(--text);padding:18px 14px 10px}
+.tl{background:var(--asphalt);border:1px solid var(--line);border-radius:16px;padding:8px 10px;margin-bottom:8px}
+.tl span{width:auto;font-weight:700}
+.link{padding:9px 13px;font-size:13px}
+#q{margin-top:4px;padding:13px 14px;font-size:15.5px}
+#btn-route,.btn.go{padding:16px;font-size:17px;border-radius:18px}
+#btn-route::before{content:"🛣️ "}
+.pill{padding:9px 15px;font-size:14px}
+.gauge{padding:12px 16px;border-radius:20px}
+.edit-chip{background:linear-gradient(135deg,#8b5cf6,#6d4ae0);border-radius:999px}
+.sum div{background:linear-gradient(160deg,var(--asphalt),var(--panel))}
+#fab-track{width:54px;height:54px;font-size:25px}
+#hud{border-radius:22px;background:linear-gradient(135deg,#0b1328,#14305c)}
+#hud-ic{width:62px;height:62px;border-radius:18px;font-size:34px}
+#hud-d{font-size:32px}
+#hud-sub{display:flex;justify-content:space-between;align-items:center}
+#hud-spd{background:rgba(255,255,255,.12);padding:3px 10px;border-radius:999px;color:#fff;direction:ltr}
+.leaflet-bar{border:0!important;box-shadow:0 4px 14px rgba(0,0,0,.3)!important;border-radius:14px;overflow:hidden}
+.leaflet-popup-content-wrapper{border-radius:16px}
+.sp{background:var(--amber)}
 </style>
 </head>
 <body>
@@ -145,7 +176,7 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
   <button class="icon-btn" id="btn-theme" aria-label="تبديل الوضع الليلي والنهاري">🌙</button>
 </header>
 <div id="toast"></div>
-<div id="hud"><div id="hud-ic">⬆</div><div id="hud-main"><b id="hud-d">–</b><span id="hud-t">–</span></div><button id="hud-stop" aria-label="إيقاف التتبع">⏹</button><div id="hud-sub"></div></div>
+<div id="hud"><div id="hud-ic">⬆</div><div id="hud-main"><b id="hud-d">–</b><span id="hud-t">–</span></div><button id="hud-stop" aria-label="إيقاف التتبع">⏹</button><div id="hud-sub"><span id="hud-rem"></span><b id="hud-spd">0 km/h</b></div></div>
 <button id="fab-track" aria-label="تتبع موقعي">🧭</button>
 <button id="clear-route">✖ مسح المسار</button>
 <div id="scrim"></div>
@@ -154,6 +185,8 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
   <div class="dh"><span>Truck GO 🚛</span><button class="icon-btn" id="menu-x" aria-label="إغلاق">✕</button></div>
   <h3>اللغة (تعليمات المسار)</h3>
   <div><button class="pill on" id="lang-ar">العربية</button><button class="pill" id="lang-fr">Français</button></div>
+  <h3>الإرشاد</h3>
+  <button class="mi" id="mi-voice">🔊 الإرشاد الصوتي: <span id="voice-st">تشغيل</span><small>يتبع لغة التعليمات المختارة</small></button>
   <h3>مساهمة</h3>
   <button class="mi" id="mi-report">🚧 تقديم بلاغ<small>جسر منخفض، طريق ممنوع على الشاحنات، حد وزن</small></button>
   <button class="mi" id="mi-comment">💬 تعليق أو اقتراح</button>
@@ -243,7 +276,7 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'© OpenStreetMap' }).addTo(map);
 
   // ---------- Day / night mode ----------
-  let theme = store.get('theme', 'light');
+  let theme = store.get('theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   function applyTheme(){ document.body.classList.toggle('light', theme === 'light'); $('btn-theme').textContent = theme === 'light' ? '🌙' : '☀️'; }
   $('btn-theme').onclick = () => { theme = theme === 'light' ? 'dark' : 'light'; store.set('theme', theme); applyTheme(); };
   applyTheme();
@@ -498,6 +531,12 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
   $('btn-route').onclick = () => calcRoute();
 
 
+  // ---------- Voice guidance ----------
+  let voiceOn = store.get('voice', true);
+  function say(t){ if (!voiceOn || !window.speechSynthesis) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = lang === 'fr' ? 'fr-FR' : 'ar'; u.rate = .95; speechSynthesis.speak(u); } catch(e){} }
+  $('voice-st').textContent = voiceOn ? 'تشغيل' : 'إيقاف';
+  $('mi-voice').onclick = () => { voiceOn = !voiceOn; store.set('voice', voiceOn); $('voice-st').textContent = voiceOn ? 'تشغيل' : 'إيقاف'; if (!voiceOn && window.speechSynthesis) speechSynthesis.cancel(); };
+
   // ---------- Live tracking + auto reroute ----------
   let tracking = false, watchId = null, meMk = null, follow = true, first = true, offCount = 0, lastRr = 0, rerouting = false, lastFix = null, wake = null;
   const ICO = { 0:'⬅', 1:'➡', 2:'↰', 3:'↱', 4:'↖', 5:'↗', 6:'⬆', 7:'⟳', 8:'⟳', 9:'↩', 10:'🏁', 11:'⬆', 12:'↖', 13:'↗' };
@@ -517,7 +556,7 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
   }
   async function doReroute(ll){
     rerouting = true; lastRr = Date.now(); offCount = 0;
-    $('hud-ic').textContent = '⟳'; $('hud-t').textContent = 'انحرفت عن المسار… جاري إعادة الحساب';
+    $('hud-ic').textContent = '⟳'; $('hud-t').textContent = 'انحرفت عن المسار… جاري إعادة الحساب'; say(lang === 'fr' ? "Recalcul de l'itinéraire" : 'أعيد حساب المسار');
     start = { lat:ll.lat, lng:ll.lng }; $('s-start').textContent = 'موقعي الحالي';
     await calcRoute({ reroute:true });
     rerouting = false;
@@ -531,13 +570,16 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
     let k = r.steps.findIndex(s => s.way_points[1] > n.i); if (k < 0) k = r.steps.length - 1;
     const nx = r.steps[Math.min(k + 1, r.steps.length - 1)], dn = Math.max(0, r.cum[nx.way_points[0]] - along), left = Math.max(0, total - along);
     $('hud-ic').textContent = ICO[nx.type] || '⬆'; $('hud-d').textContent = distTxt(dn / 1000); $('hud-t').innerHTML = stepHtml(nx);
-    $('hud-sub').textContent = distTxt(left / 1000) + ' · ' + fmtTime(r.dur * left / (r.dist || total || 1));
-    if (left < 30){ toast(lang === 'fr' ? 'Vous êtes arrivé 🏁' : 'وصلت إلى وجهتك 🏁', 5000); stopTrack(); }
+    $('hud-rem').textContent = distTxt(left / 1000) + ' · ' + fmtTime(r.dur * left / (r.dist || total || 1));
+    const sp = r.sp || (r.sp = {}), tx = stepHtml(nx).replace(/<[^>]+>/g, '');
+    if (dn < 60 && !sp[k + 'b']){ sp[k + 'a'] = sp[k + 'b'] = 1; say(tx); }
+    else if (dn < 400 && dn >= 60 && !sp[k + 'a']){ sp[k + 'a'] = 1; const d = Math.round(dn / 50) * 50; say((lang === 'fr' ? 'Dans ' + d + ' mètres, ' : 'بعد ' + d + ' متر، ') + tx); }
+    if (left < 30){ toast(lang === 'fr' ? 'Vous êtes arrivé 🏁' : 'وصلت إلى وجهتك 🏁', 5000); say(lang === 'fr' ? 'Vous êtes arrivé' : 'وصلت إلى وجهتك'); stopTrack(); }
   }
   function onPos(pos){
     const c = pos.coords, ll = L.latLng(c.latitude, c.longitude), acc = c.accuracy || 0; if (acc > 120) return;
     let hd = c.heading; if ((hd == null || isNaN(hd)) && lastFix && lastFix.distanceTo(ll) > 5) hd = bearing(lastFix, ll);
-    lastFix = ll;
+    lastFix = ll; if (c.speed != null && !isNaN(c.speed)) $('hud-spd').textContent = Math.round(c.speed * 3.6) + ' km/h';
     if (!meMk) meMk = L.marker(ll, { icon:L.divIcon({ className:'', iconSize:[0, 0], html:'<div class="me"><i></i></div>' }), zIndexOffset:2000, interactive:false }).addTo(map);
     meMk.setLatLng(ll);
     const el = meMk.getElement() && meMk.getElement().firstChild; if (el && hd != null && !isNaN(hd)) el.style.setProperty('--r', hd + 'deg');
@@ -557,7 +599,7 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
     tracking = false; if (watchId != null) navigator.geolocation.clearWatch(watchId); watchId = null; lastFix = null;
     if (wake){ wake.release().catch(() => {}); wake = null; }
     if (meMk){ map.removeLayer(meMk); meMk = null; }
-    document.body.classList.remove('tracking', 'nav'); $('fab-track').classList.remove('on', 'free'); $('fab-track').textContent = '🧭'; $('btn-track').textContent = '▶ ابدأ التتبع والملاحة';
+    $('sheet').classList.remove('min'); document.body.classList.remove('tracking', 'nav'); $('fab-track').classList.remove('on', 'free'); $('fab-track').textContent = '🧭'; $('btn-track').textContent = '▶ ابدأ التتبع والملاحة';
   }
   const toggleTrack = () => tracking ? stopTrack() : startTrack();
   $('btn-track').onclick = toggleTrack; $('hud-stop').onclick = stopTrack;
@@ -566,9 +608,12 @@ body.nav .leaflet-top.leaflet-left{top:calc(env(safe-area-inset-top,0px) + 180px
   document.addEventListener('visibilitychange', async () => { if (tracking && document.visibilityState === 'visible'){ try { wake = await navigator.wakeLock.request('screen'); } catch(e){} } });
 
   // ---------- Settings / sheet ----------
+  const fixSh = () => document.body.style.setProperty('--sh', ($('sheet').classList.contains('min') ? 52 : $('sheet').offsetHeight) + 'px');
+  new ResizeObserver(fixSh).observe($('sheet')); new MutationObserver(fixSh).observe($('sheet'), { attributes:true, attributeFilter:['class'] }); fixSh();
   $('grab').onclick = () => $('sheet').classList.toggle('min');
   L.DomEvent.disableClickPropagation($('sheet'));
 })();
 </script>
+<script>if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>
 </body>
 </html>
